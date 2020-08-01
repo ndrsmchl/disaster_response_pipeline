@@ -18,7 +18,8 @@ def clean_data(df):
     categories.columns = col_names
 
     for column in categories:
-        # set each value to be the last character of the string
+        # set each value to be the last character of the string; 
+        # replace values "2" with "1" to make binary
         categories[column] = pd.to_numeric(categories[column].str[-1]).replace(2, 1)
 
     df = pd.concat([df.drop("categories", axis=1), categories], axis=1).drop_duplicates()
