@@ -1,17 +1,35 @@
+# import libraries
+import pandas as pd
+from sqlalchemy import create_engine
 import sys
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    messages = pd.read_csv(messages_filepath, header=0).set_index("id")
+    categories = pd.read_csv(categories_filepath, header=0).set_index("id")
 
+    df = messages.join(categories, how="inner")
+
+    return df
 
 def clean_data(df):
-    pass
+    categories = df.categories.str.split(";", expand=True)
+    col_names = categories.iloc[0, :].str.extract(r"([a-z\_]*)")[0].tolist()
+    categories.columns = col_names
+
+    for column in categories:
+        # set each value to be the last character of the string
+        categories[column] = pd.to_numeric(categories[column].str[-1])
+
+    df = pd.concat([df.drop("categories", axis=1), categories], axis=1).drop_duplicates()
+
+    return df
 
 
 def save_data(df, database_filename):
-    pass  
-
+    engine = create_engine(f"sqlite:///{database_filename}")
+    df.to_sql('messages_categorized', engine, index=False)
+    
 
 def main():
     if len(sys.argv) == 4:
@@ -20,6 +38,7 @@ def main():
 
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
               .format(messages_filepath, categories_filepath))
+              
         df = load_data(messages_filepath, categories_filepath)
 
         print('Cleaning data...')
