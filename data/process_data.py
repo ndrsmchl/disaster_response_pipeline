@@ -49,7 +49,7 @@ def main():
         df = clean_data(df)
         
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-        save_data(df, database_filepath, False)
+        save_data(df, database_filepath, True)
         
         print('Cleaned data saved to database!')
     
