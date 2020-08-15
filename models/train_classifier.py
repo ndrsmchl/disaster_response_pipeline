@@ -2,12 +2,6 @@ import sys
 import pandas as pd
 from sqlalchemy import create_engine
 
-# nltk
-import nltk
-nltk.download(['punkt', 'wordnet'])
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-
 # sklearn
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
@@ -17,24 +11,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import FeatureUnion
-from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import recall_score, make_scorer, classification_report
 
-
-class UpperCaseWordsRatioExtractor(BaseEstimator, TransformerMixin):
-    def get_upper_case_words_ratio(self, text):
-        tokens = tokenize(text)
-        if len(tokens) < 1:
-            return 0
-        return sum([word.isupper() for word in tokens]) / len(tokens)
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X):
-        X_with_upper_case_ratio = pd.Series(X).apply(self.get_upper_case_words_ratio)
-        return pd.DataFrame(X_with_upper_case_ratio)
-        
+from utils.features import UpperCaseWordsRatioExtractor
+from utils.functions import tokenize
 
 def load_data(database_filepath):
     engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -44,15 +24,6 @@ def load_data(database_filepath):
     categories = Y.columns
 
     return X, Y, categories
-
-
-def tokenize(text):
-    tokens = word_tokenize(text)
-
-    lemmatizer = WordNetLemmatizer() # Initialize lemmatizer
-    tokens_cleaned = [lemmatizer.lemmatize(token).lower().strip() for token in tokens]
-
-    return tokens_cleaned
 
 
 def make_pipline(enhanced_pipeline=True):
