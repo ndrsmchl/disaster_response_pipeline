@@ -18,17 +18,21 @@ def clean_data(df):
     categories.columns = col_names
 
     for column in categories:
-        # set each value to be the last character of the string
-        categories[column] = pd.to_numeric(categories[column].str[-1])
+        # set each value to be the last character of the string; 
+        # replace values "2" with "1" to make binary
+        categories[column] = pd.to_numeric(categories[column].str[-1]).replace(2, 1)
 
     df = pd.concat([df.drop("categories", axis=1), categories], axis=1).drop_duplicates()
 
     return df
 
 
-def save_data(df, database_filename):
-    engine = create_engine(f"sqlite:///{database_filename}")
-    df.to_sql('messages_categorized', engine, index=False)
+def save_data(df, database_filename, to_sqlite=True):
+    if to_sqlite:
+        engine = create_engine(f"sqlite:///{database_filename}")
+        df.to_sql('messages_categorized', engine, index=False)
+    
+    df.to_csv("messages_categorized.csv")
     
 
 def main():
@@ -45,7 +49,7 @@ def main():
         df = clean_data(df)
         
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-        save_data(df, database_filepath)
+        save_data(df, database_filepath, True)
         
         print('Cleaned data saved to database!')
     
