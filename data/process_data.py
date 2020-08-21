@@ -27,13 +27,10 @@ def clean_data(df):
     return df
 
 
-def save_data(df, database_filename, to_sqlite=True):
-    if to_sqlite:
-        engine = create_engine(f"sqlite:///{database_filename}")
-        df.to_sql('messages_categorized', engine, index=False)
-    
-    df.to_csv("messages_categorized.csv")
-    
+def save_data(df, database_filename):
+    engine = create_engine(f"sqlite:///{database_filename}")
+    df.to_sql('messages_categorized', engine, index=False, if_exists="replace")
+        
 
 def main():
     if len(sys.argv) == 4:
@@ -49,7 +46,7 @@ def main():
         df = clean_data(df)
         
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-        save_data(df, database_filepath, True)
+        save_data(df, database_filepath)
         
         print('Cleaned data saved to database!')
     
