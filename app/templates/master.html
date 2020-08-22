@@ -60,9 +60,18 @@
     {% endblock %}
 
     {% for id in ids %}
-        <div id="{{id}}"></div>
+    
+    {% if ((loop.index + 1) % 2) == 0 %}<div class="row"> {% endif %}
+        <div class="col-md-6">
+            <div id="{{id}}"></div>
+        </div>
+        {% if ((loop.index + 2) % 2)== 0 %}</div> {% endif %}    
     {% endfor %}
+    </div>
+
 </div>
+
+
 
 <script type="text/javascript">
     const graphs = {{graphJSON | safe}};
