@@ -22,10 +22,10 @@ from .features import LengthExtractor
 
 #nltk
 import nltk
-nltk.download(['punkt', 'wordnet', 'stopwords'])
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+nltk.download(['punkt', 'wordnet', 'stopwords'])
 
 
 def load_data(database_filepath, table_name):
